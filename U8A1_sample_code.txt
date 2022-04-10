@@ -1,0 +1,54 @@
+libname AN5070u8 '/home/stefaniegreay/ANLT5070_U8A1/Workspaces/EMWS1/';
+
+proc sort data=AN5070u8.textcluster_train;
+by TextCluster_cluster_;
+run;
+
+proc freq data=AN5070u8.textcluster_train order=freq;
+tables username/maxlevels=10 plots=freqplot out=top10un;
+by TextCluster_cluster_;
+run;
+
+proc freq data=AN5070u8.textcluster_train order=freq;
+tables TextCluster_cluster_/ plots=freqplot;
+run;
+
+
+
+proc freq data=AN5070u8.textcluster_train order=freq;
+tables username/  plots=freqplot;
+run;
+
+proc sort data=AN5070u8.textcluster_train;
+by username;
+run;
+
+proc freq data=AN5070u8.textcluster_train order=freq;
+tables TextCluster_cluster_/ plots=freqplot;
+by username;
+run;
+
+proc sql;
+create table mydata.tweetsummary as 
+select username,
+name,
+max(followers) as maxfollowers,
+min(followers) as minfollowers,
+min(numberstatuses) as minstatuses,
+max(numberstatuses) as maxstatuses,
+max(time) as maxtime,
+min(time) as mintime,
+count(_document_) as numtweets
+from AN5070u8.textcluster_train
+group by username, name;
+run;
+
+
+/* sample proc print statement for printing tweets for a particular username */
+
+proc print data=AN5070u8.textcluster_train;
+var tweets;
+where username="04_8_1437";
+run;
+ 
+
